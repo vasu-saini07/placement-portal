@@ -49,6 +49,11 @@ def load_user(user_id):
 
 from flask import render_template, request, redirect, flash
 
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
