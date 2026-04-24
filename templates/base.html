@@ -10,18 +10,18 @@
 <!-- 🔷 NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="{{ url_for('home') }}">Placement Portal</a>
+    <a class="navbar-brand" href="{{ url_for('main.home') }}">Placement Portal</a>
 
     <div>
-      <a href="{{ url_for('home') }}" class="btn btn-outline-light me-2">Home</a>
+      <a href="{{ url_for('main.home') }}" class="btn btn-outline-light me-2">Home</a>
 
       {% if current_user.is_authenticated %}
         <span class="text-light me-2">Hi, {{ current_user.name }}</span>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light me-2">Dashboard</a>
-        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-light me-2">Dashboard</a>
+        <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
       {% else %}
-        <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
-        <a href="{{ url_for('signup') }}" class="btn btn-warning">Signup</a>
+        <a href="{{ url_for('main.login') }}" class="btn btn-outline-light me-2">Login</a>
+        <a href="{{ url_for('main.signup') }}" class="btn btn-warning">Signup</a>
       {% endif %}
     </div>
   </div>

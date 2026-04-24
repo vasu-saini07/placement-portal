@@ -5,13 +5,9 @@
 <h2 class="mb-4 text-center">Available Jobs</h2>
 
 {% if current_user.role == 'admin' %}
-
   <div class="text-end mb-3">
-
-    <a href="{{ url_for('add_job') }}" class="btn btn-dark">+ Add Job</a>
-
+    <a href="{{ url_for('main.add_job') }}" class="btn btn-dark">+ Add Job</a>
   </div>
-
 {% endif %}
 
 {% if jobs|length == 0 %}
@@ -29,16 +25,19 @@
           <p class="card-text text-muted">{{ job.description }}</p>
 
           {% if job.id in applied_jobs %}
-  <button class="btn btn-success w-100" disabled>Applied ✔</button>
-{% else %}
-  <a href="{{ url_for('apply', job_id=job.id) }}" class="btn btn-primary w-100">Apply Now</a>
-{% endif %}
+            <button class="btn btn-success w-100" disabled>Applied ✔</button>
+          {% else %}
+            <a href="{{ url_for('main.apply', job_id=job.id) }}" class="btn btn-primary w-100">
+              Apply Now
+            </a>
+          {% endif %}
 
-{% if current_user.role == 'admin' %}
-  <a href="{{ url_for('delete_job', job_id=job.id) }}" class="btn btn-danger btn-sm mt-2 w-100">
-    Delete Job
-  </a>
-{% endif %}
+          {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('main.delete_job', job_id=job.id) }}" 
+               class="btn btn-danger btn-sm mt-2 w-100">
+              Delete Job
+            </a>
+          {% endif %}
 
         </div>
       </div>
