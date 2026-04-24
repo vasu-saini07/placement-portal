@@ -2,43 +2,16 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
+from models import db, User, Company, Job, Application
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'secret123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db.init_app(app)
 
-db = SQLAlchemy(app)
 
 from flask_login import UserMixin
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    role = db.Column(db.String(20))  # student/admin
-
-
-class Company(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    description = db.Column(db.String(200))
-
-
-class Job(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    description = db.Column(db.String(300))
-    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
-
-
-class Application(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    job_id = db.Column(db.Integer)
-    status = db.Column(db.String(50), default='Applied')
-
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 login_manager = LoginManager()
@@ -147,6 +120,23 @@ def add_job():
         return redirect(url_for('dashboard'))
 
     return render_template('add_job.html')
+
+
+@app.route('/delete_job/<int:job_id>')
+@login_required
+def delete_job(job_id):
+    if current_user.role != 'admin':
+        return "Access denied", 403
+
+    job = Job.query.get(job_id)
+
+    if job:
+        db.session.delete(job)
+        db.session.commit()
+        flash("Job deleted successfully!")
+
+    return redirect(url_for('dashboard'))
+
 
 
 
