@@ -2,20 +2,38 @@
 
 {% block content %}
 
-<h2 class="mb-4">Available Jobs</h2>
+<h2 class="mb-4 text-center">Available Jobs</h2>
+
+{% if current_user.role == 'admin' %}
+
+  <div class="text-end mb-3">
+
+    <a href="{{ url_for('add_job') }}" class="btn btn-dark">+ Add Job</a>
+
+  </div>
+
+{% endif %}
+
+{% if jobs|length == 0 %}
+  <div class="alert alert-warning text-center">
+    No jobs available right now.
+  </div>
+{% endif %}
 
 <div class="row">
   {% for job in jobs %}
     <div class="col-md-4">
-      <div class="card mb-4 shadow">
+      <div class="card mb-4 shadow-sm border-0">
         <div class="card-body">
-          <h5>{{ job.title }}</h5>
-          <p>{{ job.description }}</p>
+          <h5 class="card-title">{{ job.title }}</h5>
+          <p class="card-text text-muted">{{ job.description }}</p>
+
           {% if job.id in applied_jobs %}
-  <button class="btn btn-secondary">Applied</button>
-{% else %}
-  <a href="/apply/{{ job.id }}" class="btn btn-primary">Apply</a>
-{% endif %}
+            <button class="btn btn-success w-100" disabled>Applied ✔</button>
+          {% else %}
+            <a href="{{ url_for('apply', job_id=job.id) }}" class="btn btn-primary w-100">Apply Now</a>
+          {% endif %}
+
         </div>
       </div>
     </div>

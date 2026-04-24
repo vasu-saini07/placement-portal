@@ -1,5 +1,7 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 
 app = Flask(__name__)
 
@@ -60,13 +62,13 @@ def signup():
         user = User(
             name=request.form['name'],
             email=request.form['email'],
-            password=request.form['password'],
+            password=generate_password_hash(request.form['password']),
             role='student'
         )
         db.session.add(user)
         db.session.commit()
         flash("Signup successful! Please login.")
-        return redirect('/login')
+        return redirect(url_for('login'))
 
     return render_template('signup.html')
 
@@ -76,10 +78,12 @@ def login():
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
 
-        if user and user.password == request.form['password']:
+        if user and check_password_hash(user.password, request.form['password']):
             login_user(user)
             flash("Login successful!")
-            return redirect('/dashboard')
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Invalid email or password")
 
     return render_template('login.html')
 
@@ -87,7 +91,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect('/login')
+    return redirect(url_for('login'))
 
 @app.route('/dashboard')
 @login_required
@@ -112,7 +116,7 @@ def apply(job_id):
 
     if existing:
         flash("You have already applied for this job!")
-        return redirect('/dashboard')
+        return redirect(url_for('dashboard'))
 
     application = Application(
         user_id=current_user.id,
@@ -123,7 +127,7 @@ def apply(job_id):
     db.session.commit()
 
     flash("Applied successfully!")
-    return redirect('/dashboard')
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/add_job', methods=['GET', 'POST'])
@@ -140,7 +144,7 @@ def add_job():
         )
         db.session.add(job)
         db.session.commit()
-        return redirect('/dashboard')
+        return redirect(url_for('dashboard'))
 
     return render_template('add_job.html')
 
